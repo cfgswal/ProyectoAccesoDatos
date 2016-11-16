@@ -81,6 +81,7 @@ public class ConsultaProveedorCodigo extends JFrame {
 		JComboBox comboBox = new JComboBox();
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
+				
 			}
 			
 		});
