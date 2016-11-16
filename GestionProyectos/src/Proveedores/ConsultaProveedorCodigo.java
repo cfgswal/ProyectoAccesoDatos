@@ -84,9 +84,9 @@ public class ConsultaProveedorCodigo extends JFrame {
 						query.executeQuery();
 						ResultSet resul = query.getResultSet();
 						while (resul.next()) {
-							textFieldnombre.setText(resul.getString(1));
-							textFieldapellido.setText(resul.getString(2));
-							textFielddireccion.setText(resul.getString(3));
+							//textFieldnombre.setText(resul.getString(1));
+							//textFieldapellido.setText(resul.getString(2));
+							//textFielddireccion.setText(resul.getString(3));
 
 						}
 						resul.close();
