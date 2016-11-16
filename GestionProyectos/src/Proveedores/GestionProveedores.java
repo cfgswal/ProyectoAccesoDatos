@@ -241,9 +241,14 @@ public class GestionProveedores {
 							"root");
 					Statement stm = con.createStatement();
 					ResultSet resul = stm.executeQuery(
-							"select CODIGO from proveedores where CODIGO = '" + textFieldcodigo.getText() + "'");
+							"select CODIGO,NOMBRE,APELLIDOS,DIRECCION from proveedores where CODIGO = '" + textFieldcodigo.getText() + "'");
 
 					if (resul.next()) {
+						
+						if(textFieldnombre.getText().contentEquals(resul.getString(2))&&textFieldapellido.getText().contentEquals(resul.getString(3))&&
+								textFielddireccion.getText().contentEquals(resul.getString(4))){
+							JOptionPane.showMessageDialog(null, "NO SE HA MODIFICADO NINGUN CAMPO");
+						}else{
 						String query = "update proveedores set NOMBRE = ?,APELLIDOS = ?,DIRECCION = ? where CODIGO = ?";
 						PreparedStatement preparedStmt = con.prepareStatement(query);
 						if (textFieldnombre.getText().length() > 20) {
@@ -267,7 +272,7 @@ public class GestionProveedores {
 						con.close();
 						borrarcampos();
 						JOptionPane.showMessageDialog(null, "PROVEEDOR MODIFICADO CON EXITO");
-
+						}
 					} else {
 						JOptionPane.showMessageDialog(null, "ESTE PROVEEDOR NO EXISTE EN LA BASE DE DATOS ");
 					}
