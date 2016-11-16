@@ -23,6 +23,8 @@ import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class ConsultaProveedorCodigo extends JFrame {
 
@@ -67,38 +69,7 @@ public class ConsultaProveedorCodigo extends JFrame {
 		panel.add(lblNewLabel);
 		
 		textField = new JTextField();
-		textField.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				
-					try {
-						textField.setText(textField.getText().toUpperCase());
-						Class.forName("com.mysql.jdbc.Driver");
-						Connection con = DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/BDdni_alumno",
-								"root", "root");
-						PreparedStatement query = con.prepareStatement(
-								"SELECT NOMBRE,APELLIDOS,DIRECCION FROM proveedores where CODIGO = ?");
-
-						query.setString(1, textField.getText());
-
-						query.executeQuery();
-						ResultSet resul = query.getResultSet();
-						while (resul.next()) {
-							//textFieldnombre.setText(resul.getString(1));
-							//textFieldapellido.setText(resul.getString(2));
-							//textFielddireccion.setText(resul.getString(3));
-
-						}
-						resul.close();
-						query.close();
-						con.close();
-
-					} catch (ClassNotFoundException | SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-			}
-		});
+		
 		textField.setBounds(260, 15, 81, 28);
 		panel.add(textField);
 		textField.setColumns(10);
@@ -107,17 +78,38 @@ public class ConsultaProveedorCodigo extends JFrame {
 		LabelDescripprov.setBounds(43, 121, 61, 16);
 		panel.add(LabelDescripprov);
 		
+		JComboBox comboBox = new JComboBox();
+		comboBox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+			}
+			
+		});
+		comboBox.setBounds(18, 60, 322, 27);
+		panel.add(comboBox);
+		
 		JButton btnBuscar = new JButton("Buscar Proveedor");
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				comboBox.removeAllItems();
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					Connection con = DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/BDdni_alumno", "root",
 							"root");
 					Statement stm = con.createStatement();
-					ResultSet resul = stm.executeQuery("select CODPROVEEDOR from gestion where CODPROVEEDOR = '"
-							+ textField.getText() + "'");	
-					LabelDescripprov.setText("CODIGO: "+textField.getText()+"/nNOMBRE: ");
+				
+					ResultSet resul = stm.executeQuery("select CODIGO from proveedores where CODIGO like '"
+							+ textField.getText() + "%" + "'");	
+					
+					if(resul.next()&& textField.getText().length()>0){
+						comboBox.addItem(resul.getString(1));
+						while(resul.next()){
+						comboBox.addItem(resul.getString(1));
+						
+						}
+						
+					}else{
+						JOptionPane.showMessageDialog(null, "NO EXISTE ESTE PROVEEDOR");
+					}
 						stm.close();
 						con.close();
 						
@@ -135,9 +127,7 @@ public class ConsultaProveedorCodigo extends JFrame {
 		textPane.setBounds(18, 99, 511, 173);
 		panel.add(textPane);
 		
-		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(18, 60, 322, 27);
-		panel.add(comboBox);
+		
 		
 		
 	}
