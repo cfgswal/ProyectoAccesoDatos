@@ -1,0 +1,7 @@
+/* ******** TABLAS PIEZAS, PROVEEDORES, PROYECTOS, GESTION:  MySQL********** */
+
+
+CREATE SCHEMA IF NOT EXISTS BDdni_alumno;
+
+commit;
+
