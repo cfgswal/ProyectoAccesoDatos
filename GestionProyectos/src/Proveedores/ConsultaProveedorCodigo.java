@@ -105,6 +105,7 @@ public class ConsultaProveedorCodigo extends JFrame {
 						comboBox.addItem(resul.getString(1));
 						while(resul.next()){
 						comboBox.addItem(resul.getString(1));
+						//prueba
 						
 						}
 						
