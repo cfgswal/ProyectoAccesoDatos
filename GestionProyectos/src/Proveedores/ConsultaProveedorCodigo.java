@@ -13,6 +13,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -51,6 +53,8 @@ public class ConsultaProveedorCodigo extends JFrame {
 	 * Create the frame.
 	 */
 	public ConsultaProveedorCodigo() {
+		
+		JDialog.setDefaultLookAndFeelDecorated(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 547, 300);
 		
@@ -74,43 +78,89 @@ public class ConsultaProveedorCodigo extends JFrame {
 		panel.add(textField);
 		textField.setColumns(10);
 		
-		JLabel LabelDescripprov = new JLabel("New label");
-		LabelDescripprov.setBounds(43, 121, 61, 16);
-		panel.add(LabelDescripprov);
+		JLabel label_1 = new JLabel("");
+		label_1.setBounds(43, 121, 472, 28);
+		panel.add(label_1);
+		
+		JLabel label_2 = new JLabel("New label");
+		label_2.setBounds(43, 161, 472, 28);
+		panel.add(label_2);
+		
+		JLabel label_3 = new JLabel("New label");
+		label_3.setBounds(43, 201, 472, 28);
+		panel.add(label_3);
+		
+		JLabel label_4 = new JLabel("New label");
+		label_4.setBounds(43, 241, 472, 28);
+		panel.add(label_4);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.addItemListener(new ItemListener() {
-			public void itemStateChanged(ItemEvent e) {
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Class.forName("com.mysql.jdbc.Driver");
+					Connection con = DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/BDdni_alumno", "root",
+							"root");
+					Statement stm = con.createStatement();
+				if(comboBox.getSelectedItem()!=null){
+					String codigo = comboBox.getSelectedItem().toString();
 				
+					ResultSet resultado = stm.executeQuery("select CODIGO,NOMBRE,APELLIDOS,DIRECCION from proveedores where CODIGO = '"
+							+codigo+ "'");	
+				
+					while(resultado.next()){
+					label_1.setText("CODIGO:	" + resultado.getString(1));
+					label_2.setText("NOMBRE:	" + resultado.getString(2));
+					label_3.setText("APELLIDO:	" + resultado.getString(3));
+					label_4.setText("DIRECCION:	" + resultado.getString(4));
+					}
+					stm.close();
+					con.close();
+				}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
-			
 		});
+		
+		
 		comboBox.setBounds(18, 60, 322, 27);
 		panel.add(comboBox);
 		
+		
 		JButton btnBuscar = new JButton("Buscar Proveedor");
+		btnBuscar.setBounds(344, 16, 197, 29);
+		panel.add(btnBuscar);
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				comboBox.removeAllItems();
+				label_1.setText("");
+				label_2.setText("");
+				label_3.setText("");
+				label_4.setText("");
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					Connection con = DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/BDdni_alumno", "root",
 							"root");
 					Statement stm = con.createStatement();
 				
-					ResultSet resul = stm.executeQuery("select CODIGO from proveedores where CODIGO like '"
+					ResultSet resultado = stm.executeQuery("select CODIGO from proveedores where CODIGO like '"
 							+ textField.getText() + "%" + "'");	
 					
-					if(resul.next()&& textField.getText().length()>0){
-						comboBox.addItem(resul.getString(1));
-						while(resul.next()){
-						comboBox.addItem(resul.getString(1));
-						//prueba
+					if(resultado.next() ){
+						comboBox.addItem(resultado.getString(1));
+						while(resultado.next()){
+						comboBox.addItem(resultado.getString(1));
+					
 						
 						}
 						
 					}else{
-						JOptionPane.showMessageDialog(null, "NO EXISTE ESTE PROVEEDOR");
+						JOptionPane.showMessageDialog(null, "NO EXISTE ESTE PROVEEDOR","TITULO VENTANA",JOptionPane.ERROR_MESSAGE);
 					}
 						stm.close();
 						con.close();
@@ -122,12 +172,16 @@ public class ConsultaProveedorCodigo extends JFrame {
 				}
 			}
 		});
-		btnBuscar.setBounds(344, 16, 197, 29);
-		panel.add(btnBuscar);
+		
+	
+		
+		
 		
 		JTextPane textPane = new JTextPane();
 		textPane.setBounds(18, 99, 511, 173);
 		panel.add(textPane);
+		
+		
 		
 		
 		

@@ -9,6 +9,9 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+
+import Principal.Inicio;
+
 import javax.swing.JTextField;
 import javax.naming.spi.DirStateFactory.Result;
 import javax.swing.JButton;
@@ -78,7 +81,6 @@ public class GestionProveedores {
 	private void initialize() {
 
 		frame = new JFrame();
-
 		frame.setBounds(100, 100, 547, 300);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -195,31 +197,37 @@ public class GestionProveedores {
 					if (resul.next()) {
 						JOptionPane.showMessageDialog(null, "ESTE PROVEEDOR YA EXISTE EN LA BASE DE DATOS ");
 					} else {
-						String query = "insert into proveedores values(?,?,?,?)";
-						PreparedStatement preparedStmt = con.prepareStatement(query);
+						if(textFieldcodigo.getText().length()==0||textFieldnombre.getText().length()==0||textFieldapellido.getText().length()==0||
+								textFielddireccion.getText().length()==0){
+							JOptionPane.showMessageDialog(null, "EL CODIGO, NOMBRE, APELLIDOS Y DIRECCION NO PUEDEN ESTAR VACIOS ");
+						}else{
+							String query = "insert into proveedores values(?,?,?,?)";
+							PreparedStatement preparedStmt = con.prepareStatement(query);
 
-						preparedStmt.setString(1, textFieldcodigo.getText());
+							preparedStmt.setString(1, textFieldcodigo.getText());
 
-						if (textFieldnombre.getText().length() > 20) {
-							preparedStmt.setString(2, textFieldnombre.getText().substring(0, 20));
-						} else {
-							preparedStmt.setString(2, textFieldnombre.getText());
+							if (textFieldnombre.getText().length() > 20 ) {
+								preparedStmt.setString(2, textFieldnombre.getText().substring(0, 20));
+							} else {							
+								preparedStmt.setString(2, textFieldnombre.getText());						
+							}
+							if (textFieldapellido.getText().length() > 30) {
+								preparedStmt.setString(3, textFieldapellido.getText().substring(0, 30));
+							} else {
+								preparedStmt.setString(3, textFieldapellido.getText());
+							}
+							if (textFielddireccion.getText().length() > 40) {
+								preparedStmt.setString(4, textFielddireccion.getText().substring(0, 40));
+							} else {
+								preparedStmt.setString(4, textFielddireccion.getText());
+							}
+							preparedStmt.execute();
+							preparedStmt.close();
+							con.close();
+							borrarcampos();
+							JOptionPane.showMessageDialog(null, "PROVEEDOR INSERTADO CON EXITO");
 						}
-						if (textFieldapellido.getText().length() > 30) {
-							preparedStmt.setString(3, textFieldapellido.getText().substring(0, 30));
-						} else {
-							preparedStmt.setString(3, textFieldapellido.getText());
-						}
-						if (textFielddireccion.getText().length() > 40) {
-							preparedStmt.setString(4, textFielddireccion.getText().substring(0, 40));
-						} else {
-							preparedStmt.setString(4, textFielddireccion.getText());
-						}
-						preparedStmt.execute();
-						preparedStmt.close();
-						con.close();
-						borrarcampos();
-						JOptionPane.showMessageDialog(null, "PROVEEDOR INSERTADO CON EXITO");
+						
 					}
 				} catch (ClassNotFoundException | SQLException e1) {
 					// TODO Auto-generated catch block
@@ -249,6 +257,10 @@ public class GestionProveedores {
 								textFielddireccion.getText().contentEquals(resul.getString(4))){
 							JOptionPane.showMessageDialog(null, "NO SE HA MODIFICADO NINGUN CAMPO");
 						}else{
+							if(textFieldcodigo.getText().length()==0||textFieldnombre.getText().length()==0||textFieldapellido.getText().length()==0||
+									textFielddireccion.getText().length()==0){
+								JOptionPane.showMessageDialog(null, "EL CODIGO, NOMBRE, APELLIDOS Y DIRECCION NO PUEDEN ESTAR VACIOS ");
+							}else{
 						String query = "update proveedores set NOMBRE = ?,APELLIDOS = ?,DIRECCION = ? where CODIGO = ?";
 						PreparedStatement preparedStmt = con.prepareStatement(query);
 						if (textFieldnombre.getText().length() > 20) {
@@ -272,6 +284,7 @@ public class GestionProveedores {
 						con.close();
 						borrarcampos();
 						JOptionPane.showMessageDialog(null, "PROVEEDOR MODIFICADO CON EXITO");
+							}
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "ESTE PROVEEDOR NO EXISTE EN LA BASE DE DATOS ");
@@ -294,18 +307,27 @@ public class GestionProveedores {
 					Connection con = DriverManager.getConnection("jdbc:mysql://192.168.33.10:3306/BDdni_alumno", "root",
 							"root");
 					Statement stm = con.createStatement();
-					ResultSet resul = stm.executeQuery("select CODPROVEEDOR from gestion where CODPROVEEDOR = '"
+					ResultSet resul = stm.executeQuery("select CODIGO from proveedores where CODIGO = '"
 							+ textFieldcodigo.getText() + "'");
-
-					if (resul.next()) {
-						JOptionPane.showMessageDialog(null, "NO SE PUEDE BORRAR UN PROVEEDOR CON UNA GESTION RELIZADA");
-					} else {
-						stm.executeUpdate("delete from proveedores where CODIGO = '" + textFieldcodigo.getText() + "'");
-						stm.close();
-						con.close();
-						borrarcampos();
-						JOptionPane.showMessageDialog(null, "PROVEEDOR ELIMINADO CON EXITO");
+					if(resul.next()){
+						resul = stm.executeQuery("select CODPROVEEDOR from gestion where CODPROVEEDOR = '"
+								+ textFieldcodigo.getText() + "'");
+						if (resul.next()) {
+							JOptionPane.showMessageDialog(null, "NO SE PUEDE BORRAR UN PROVEEDOR CON UNA GESTION RELIZADA");
+						} else {
+							stm.executeUpdate("delete from proveedores where CODIGO = '" + textFieldcodigo.getText() + "'");
+							stm.close();
+							con.close();
+							borrarcampos();
+							JOptionPane.showMessageDialog(null, "PROVEEDOR ELIMINADO CON EXITO");
+						}
+					
+					}else{
+						JOptionPane.showMessageDialog(null, "ESTE PROVEEDOR NO EXISTE EN LA BASE DATOS");
 					}
+					
+
+					
 				} catch (ClassNotFoundException | SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
